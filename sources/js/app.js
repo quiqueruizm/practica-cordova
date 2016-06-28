@@ -1,33 +1,32 @@
 // Utlizaremos una función anónima autoejecutable de modo que nuestras variables no sean globales. Más info: http://www.formandome.es/javascript/objetos-variables-funciones-javascript/
 
-(function () {
-    /* ---------------------------------- Variables locales ---------------------------------- */
-    //var adapter = new WebSqlAdapter();
-    //var adapter = new MemoryAdapter();
-    //var adapter = new JSONPAdapter();
-    var adapter = new LocalStorageAdapter();
-    adapter.inicializar().done(function () {
-        console.log("Inicializado: Adaptador de datos");
-    });
+(function() {
+  /* ---------------------------------- Variables locales ---------------------------------- */
+  //var adapter = new WebSqlAdapter();
+  //var adapter = new MemoryAdapter();
+  //var adapter = new JSONPAdapter();
+  var adapter = new LocalStorageAdapter();
 
-    /* --------------------------------- Registro de eventos -------------------------------- */
-    $('#btnBuscar').on('keyup', encontrarPorNombre);
-    $('#btnAyuda').on('click', function() {
-        alert("Una ayuda nunca viene mal :-)")
-    });
+  //inicializamos el adaptador, metiendo los registros en la base de datos o lo q tengamos q hacer. Usamos promesas
+  adapter.inicializar().done(function() {
+    console.log("Inicializado: Adaptador de datos");
+    renderHomeView();
+  });
 
+  /* --------------------------------- Registro de eventos -------------------------------- */
+  
+  
 
-    /* ---------------------------------- Funciones locales ---------------------------------- */
-    function encontrarPorNombre() {
-        adapter.encontrarPorNombre($('#btnBuscar').val()).done(function (futbolistas) {
-            var l = futbolistas.length;
-            var e;
-            $('#lstFutbolistas').empty();
-            for (var i = 0; i < l; i++) {
-                e = futbolistas[i];
-                $('#lstFutbolistas').append('<li><a href="#futbolistas/' + e.id + '">' + e.nombre + ' ' + e.apellido + '</a></li>');
-            }
-        });
-    }
+  /* ---------------------------------- Funciones locales ---------------------------------- */
+  function encontrarPorNombre() {
+   adapter.encontrarPorNombre($('#btnBuscar').val()).done(function(futbolistas) {
+     $("#lstFutbolistas").html(Handlebars.templates.listaJugadores(futbolistas));
+   });
+ }
+
+   function renderHomeView() {
+   $('body').html(Handlebars.templates.home());
+   $('#btnBuscar').on('keyup', encontrarPorNombre);
+ }
 
 }());
